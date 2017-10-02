@@ -1,0 +1,59 @@
+
+#Variable Declare
+configFilePath=/home/vagrant/project/knight/gemtek_jira_bundle/premises/test_suites/P800_series/gemtek/config/johnny_config_844fb.ini
+
+testCaseFile=/home/vagrant/project/knight/gemtek_jira_bundle/premises/test_suites/P800_series/gemtek/GUI/GUI_Advanced/Config_Management
+
+TagNameList=config_wan
+
+if [$#>0]; then
+        TagNameList=
+	for((i=1;i<=$#;i++));
+	do
+	  TagNameList+=$i
+	done		
+fi
+
+#Start to build tag parameter list
+convertTagListToIncludeParameter() 
+{ 
+    if [$#==0];then
+	return ''
+    fi
+    #varaible declare
+    tagList=$1
+    parameterList=
+    for i in "${tagList[@]}"
+    do
+      parameterList+="-i"
+      parameterList+=$i
+    done	
+}
+
+
+
+LogFolder=~/run_robot_log/
+TagParaList=$(convertTagListToIncludeParameter TagNameList)
+
+#start
+echo -e "start to execute cafebot test  \a \n"
+echo -e "config file: ${configFilePath} \a \n"
+echo -e "Test Case file: ${testCaseFile} \a \n"
+echo -e	"Tag Name: ${TagName} \a \n"
+sleep 2s
+
+cd $LogFolder
+if [[$TagParaList]]; then
+	cafebot.py $configFilePath TagParaList  $testCaseFile
+else
+	cafebot.py $configFilePath  $testCaseFile
+fi
+
+#Find the latest generated log directory
+LogFolder=$(ls -t ${LogFolder} | head -1)/report.html
+echo -e "show log content in path: "$LogFolder
+
+#open log parent directory
+firefox $LogFolder
+
+
