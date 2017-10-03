@@ -1,3 +1,8 @@
+# Program:
+#       This program is for helping us execute long cafebot command.
+# History:
+# 2017/9/22 initial  
+# 2017/10/3	modify to support plural tag parameter input
 
 #Variable Declare
 configFilePath=/home/vagrant/project/knight/gemtek_jira_bundle/premises/test_suites/P800_series/gemtek/config/johnny_config_844fb.ini
