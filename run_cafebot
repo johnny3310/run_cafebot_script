@@ -4,48 +4,61 @@ configFilePath=/home/vagrant/project/knight/gemtek_jira_bundle/premises/test_sui
 
 testCaseFile=/home/vagrant/project/knight/gemtek_jira_bundle/premises/test_suites/P800_series/gemtek/GUI/GUI_Advanced/Config_Management
 
-TagNameList=config_wan
+TagNameList=('config_wan')
+TagParaListStr='-i config_wan'
+echo "the input parameter count is:"$#
 
-if [$#>0]; then
-        TagNameList=
-	for((i=1;i<=$#;i++));
-	do
-	  TagNameList+=$i
-	done		
+ if [ $# -gt 0 ]; then
+        echo "inside if parameter num>0"
+        TagNameList=()
+        for var in "$@"
+        do
+ #         echo "TagNameList+="$var
+          TagNameList+=($var)
+ #         sleep 2s;
+        done
 fi
+
+echo -e "tagNameList: \a \n"
+echo "${TagNameList[*]}"
+echo -e "\a \n"
 
 #Start to build tag parameter list
 convertTagListToIncludeParameter() 
 { 
-    if [$#==0];then
-	return ''
-    fi
-    #varaible declare
-    tagList=$1
-    parameterList=
-    for i in "${tagList[@]}"
-    do
-      parameterList+="-i"
-      parameterList+=$i
-    done	
+    echo -e "inside function \a  \n"	
+    
+    TagParaListStr=""
+     for var in "$@"
+        do
+	   TagParaListStr+="-i "
+      	   TagParaListStr+=$var" "                 
+        done                              	   		
 }
 
 
 
 LogFolder=~/run_robot_log/
-TagParaList=$(convertTagListToIncludeParameter TagNameList)
+if [ $# -gt 0 ]; then
+   convertTagListToIncludeParameter ${TagNameList[@]}
+fi
+echo -e "tag para list str:"$TagParaListStr" \a \n"
 
 #start
 echo -e "start to execute cafebot test  \a \n"
 echo -e "config file: ${configFilePath} \a \n"
 echo -e "Test Case file: ${testCaseFile} \a \n"
-echo -e	"Tag Name: ${TagName} \a \n"
+echo -e	"Tag Name: ${TagParaListStr} \a \n"
 sleep 2s
 
 cd $LogFolder
-if [[$TagParaList]]; then
-	cafebot.py $configFilePath TagParaList  $testCaseFile
+if [ -z!='$TagParaListStr' ]; then
+	echo "execute cafebot with tag list"
+	sleep 2s
+	cafebot.py $configFilePath $TagParaListStr  $testCaseFile
 else
+	echo "execute cafebot without tag list"
+	sleep 2s
 	cafebot.py $configFilePath  $testCaseFile
 fi
 
